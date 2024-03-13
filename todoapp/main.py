@@ -1,27 +1,27 @@
 from contextlib import asynccontextmanager
-from typing import Annotated
-from sqlmodel import Field, Session, SQLModel, create_engine, select, Integer
+from typing import Union, Optional, Annotated
+# from fastapi_neon import settings
+from sqlmodel import Field, Session, SQLModel, create_engine, select
 from fastapi import FastAPI, Depends
-from dotenv import load_dotenv
-import os
 
-# Load environment variables from .env file
-load_dotenv()
 
-# Define the Todo model
 class Todo(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     content: str = Field(index=True)
 
-# Read DATABASE_URL from environment variables
-connection_string: str | None = os.getenv("DATABASE_URL", "")
-print(connection_string)
-# Create the database engine
-if connection_string:
-    engine = create_engine(connection_string)
-else:
-    # Handle the case where connection_string is empty (None or "")
-    raise ValueError("DATABASE_URL is not set in the environment.")
+
+# only needed for psycopg 3 - replace postgresql
+# with postgresql+psycopg in settings.DATABASE_URL
+# connection_string = str(settings.DATABASE_URL).replace(
+#     "postgresql", "postgresql+psycopg"
+# )
+
+connection_string = "postgresql://ansarisudais333:Poxn52hIkBTs@ep-ancient-silence-a5pe46yn.us-east-2.aws.neon.tech/sqlDBWithFastAPI?sslmode=require"
+
+engine = create_engine(
+    connection_string, connect_args={"sslmode": "require"}, pool_recycle=300
+)
+
 # Function to create database tables
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
