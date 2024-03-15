@@ -1,63 +1,66 @@
 "use client"
-import React, { useState, useRef } from 'react'
-import axios from 'axios';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation'
 
-interface NewTodo {
-    content: string;
-}
-const AddTodo = async () => {
-    const [content, setContent] = useState<string>(""); // Change the type to string
-    const { refresh } = useRouter();
-    const inputRef = useRef<HTMLInputElement | null>(null);
 
-    const handleAddTodo = () => {
-        if (content) {
-            fetch(`${process.env.API_BASE_URL}/todos`, {
-                method: "POST",
-                body: JSON.stringify({
-                    content: content
-                }),
-            })
-                .then(res => {
-                    console.log("response : ", res.ok);
-                    refresh();
-                    setContent("");
-                })
-                .catch(error => {
-                    console.error("Error adding todo:", error);
+const AddTodo = () => {
+    const [task, setTask] = useState("");
+    const { refresh } = useRouter();//refresh is destructured from useRouter
+    const inputRef = useRef<HTMLInputElement | null>(null); // ref for the input element
+
+
+    const handleSubmit = async () => {
+        try {
+            if (task) {
+                const res = await fetch("http://localhost:8000/todos", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        content: task
+                    }),
                 });
+                refresh();
+                if (res.ok) {
+                    console.log("Added successfully");
+                    // Refresh data or update UI
+                } else {
+                    console.error("Failed to add todo: ", await res.text());
+                }
+                setTask(''); // Clear the task
+                if (inputRef.current) {
+                    inputRef.current.value = ''; // Clear the input field
+                }
+            }
+        } catch (error) {
+            console.error("Error adding todo:", error);
         }
     };
 
-
     return (
         <div>
-            <form className='w-full flex gap-x-3 flex-col'>
+            <form className='w-full flex gap-x-3'>
                 <input
+                    value={task}
+                    onChange={(e) => setTask(e.target.value)}
+                    className='rounded-full text-black w-full py-3.5 px-5 border focus:outline-secondary'
                     type="text"
-                    value={content} // Use value instead of onChange
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Enter todo content..."
-                    className='rounded-full w-full py-3.5 px-5 border focus:outline-secondary text-teal-950'
                 />
                 <button
                     type='button'
                     onClick={() => {
-                        console.log("clicked");
-                        handleAddTodo();
+                        handleSubmit();
                         if (inputRef.current) {
-                            inputRef.current.value = '';
+                            inputRef.current.value = ''; // Clear the input field after clicking the button
                         }
                     }}
-                    className='p-4 shrink-0 rounded-full bg-red-500 hover:bg-green-400'
-                >
-                    Add Todo
+                    className='p-4 shrink-0 rounded-full bg-gradient-to-b from-primary to-secondary'>
+                    <span className='text-white font-bold text-4xl'>+</span>
                 </button>
             </form>
-        </div>
+        </div >
     );
 };
-
 
 export default AddTodo;

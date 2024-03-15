@@ -3,6 +3,7 @@ from typing import Union, Optional, Annotated
 # from fastapi_neon import settings
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware  # Add this import
 
 
 class Todo(SQLModel, table=True):
@@ -42,6 +43,14 @@ app = FastAPI(lifespan=lifespan, title="Hello World API with DB",
                       "description": "Development Server"
                   }
               ])
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Include PUT for update method
+    allow_headers=["*"],
+)
 
 # Dependency to get a database session
 def get_session():

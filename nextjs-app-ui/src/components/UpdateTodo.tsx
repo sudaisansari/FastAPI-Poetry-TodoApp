@@ -20,7 +20,7 @@ const UpdateTodo = () => {
                     "Content-Type": "application/json"
                 }
             });
-            console.log("Get : ", res.ok);
+            console.log("Get : ", res .ok);
             if (!res.ok) {
                 throw new Error("failed to fetch data");
             };
@@ -70,3 +70,4 @@ const UpdateTodo = () => {
 }
 
 export default UpdateTodo;
+

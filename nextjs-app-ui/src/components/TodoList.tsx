@@ -1,48 +1,9 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Wrapper from './Wrapper';
 
 interface Todo {
     id: number;
     content: string;
 }
-
-// const TodoList: React.FC = () => {
-//     const [todos, setTodos] = useState<Todo[]>([]);
-
-//     useEffect(() => {
-//         const fetchTodos = async () => {
-//             try {
-//                 const response = await axios.get<Todo[]>(`${process.env.API_BASE_URL}/todos/`);
-//                 setTodos(response.data);
-//                 console.log(response)
-//             } catch (error) {
-//                 console.error('Error fetching todos:', error);
-//             }
-//         };
-
-//         fetchTodos();
-//     }, []);
-// console.log("Todos : ",todos)
-//     return (
-//         <div>
-//             <h2>Todo List</h2>
-//             <ul>
-//                 {todos.map(todo => (
-//                     <li className='text-white'
-//                         key={todo.id}>
-//                         Todo ID: {todo.id},
-//                         Content: {todo.content}
-//                     </li>
-//                 ))}
-//             </ul>
-//         </div>
-//     );
-// };
-
-// export default TodoList;
-
 
 const getData = async () => {
     try {
@@ -54,7 +15,6 @@ const getData = async () => {
                     "Content-Type": "application/json"
                 }
             });
-        console.log("Get : ",res.ok);
         if (!res.ok) {
             throw new Error("failed to fetch data");
         };
@@ -69,7 +29,6 @@ const getData = async () => {
 const TodoList = async () => {
 
     const res: Todo[] = await getData();
-    console.log(res);
 
     return (
         <Wrapper>
@@ -93,3 +52,38 @@ const TodoList = async () => {
 }
 
 export default TodoList
+
+        // const TodoList: React.FC = () => {
+        //     const [todos, setTodos] = useState<Todo[]>([]);
+        
+        //     useEffect(() => {
+        //         const fetchTodos = async () => {
+        //             try {
+        //                 const response = await axios.get<Todo[]>(`${process.env.API_BASE_URL}/todos/`);
+        //                 setTodos(response.data);
+        //                 console.log(response)
+        //             } catch (error) {
+        //                 console.error('Error fetching todos:', error);
+        //             }
+        //         };
+        
+        //         fetchTodos();
+        //     }, []);
+        // console.log("Todos : ",todos)
+        //     return (
+        //         <div>
+        //             <h2>Todo List</h2>
+        //             <ul>
+        //                 {todos.map(todo => (
+        //                     <li className='text-white'
+        //                         key={todo.id}>
+        //                         Todo ID: {todo.id},
+        //                         Content: {todo.content}
+        //                     </li>
+        //                 ))}
+        //             </ul>
+        //         </div>
+        //     );
+        // };
+        
+        // export default TodoList;
