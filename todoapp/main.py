@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     yield
 
 # Create the FastAPI app
-app = FastAPI(lifespan=lifespan, title="Hello World API with DB", 
+app = FastAPI(lifespan=lifespan, title="API with DB", 
               version="0.0.1",
               servers=[
                   {

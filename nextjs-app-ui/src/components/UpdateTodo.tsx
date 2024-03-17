@@ -1,73 +1,80 @@
 "use client"
-import React, { useState } from 'react';
-import Wrapper from './Wrapper';
+import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
-interface Todo {
-    id: number;
-    content: string;
-}
+const UpdateTodo: React.FC = () => {
+    const [updatedTask, setUpdatedTask] = useState("");
+    const [todoId, setTodoId] = useState<number | null>(null); // Optionally manage the todo ID state
+    const { refresh } = useRouter();
+    const inputRef = useRef<HTMLInputElement | null>(null); // ref for the input 
 
-const UpdateTodo = () => {
-    const [todoId, setTodoId] = useState<number | null>(null);
-    const [todo, setTodo] = useState<Todo | null>(null);
+    const apiUrl = "http://localhost:8000";
+    const todoUrl = apiUrl + "/todos/" + todoId;
 
-    const getData = async () => {
+    const handleSubmit = async () => {
         try {
-            const res = await fetch(`${process.env.API_BASE_URL}/todos/${todoId}`, {
-                method: "GET",
-                cache: "no-store",
+            if (!todoId) {
+                console.error("No todo ID provided");
+                return;
+            }
+
+            const res = await fetch(todoUrl, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
-                }
+                },
+                body: JSON.stringify({
+                    content: updatedTask
+                }),
             });
-            console.log("Get : ", res .ok);
-            if (!res.ok) {
-                throw new Error("failed to fetch data");
-            };
-            const result = await res.json();
-            return result
+            if (res.ok) {
+                console.log("Todo updated successfully");
+            } else {
+                console.error("Failed to update todo: ", await res.text());
+            }
+            refresh();
+            setTodoId(null)
+            setUpdatedTask('')
+            if (inputRef.current) {
+                inputRef.current.value = ''; // Clear the input field
+            }
         } catch (error) {
-            console.log(error)
-            throw error
+            console.error("Error updating todo:", error);
         }
-    }
-
-    const handleFetchTodo = async () => {
-        try {
-            const todoData = await getData();
-            setTodo(todoData);
-        } catch (error) {
-            console.error('Error fetching todo:', error);
-        }
-    }
+    };
 
     return (
-        <Wrapper>
-            <div>
-                <label htmlFor="todoIdInput">Enter Todo ID:</label>
+        <div>
+            <form className='w-full flex gap-x-3'>
                 <input
-                    id="todoIdInput"
-                    type="number"
-                    value={todoId || ''}
-                    className='p-4 rounded-full text-black'
-                    onChange={(e) => setTodoId(parseInt(e.target.value))}
+                    value={updatedTask}
+                    onChange={(e) => setUpdatedTask(e.target.value)}
+                    className='rounded-full text-black w-full py-3.5 px-5 border focus:outline-secondary'
+                    type="text"
+                    placeholder='Updated Todo'
                 />
-                <button onClick={handleFetchTodo}>Fetch Todo</button>
-            </div>  
-            <div>
-                <h2>Todo Details</h2>
-                {todo ? (
-                    <div>
-                        <p>Todo ID: {todo.id}</p>
-                        <p>Content: {todo.content}</p>
-                    </div>
-                ) : (
-                    <p>No todo data fetched</p>
-                )}
-            </div>
-        </Wrapper>
+                {/* Optionally, you can have an input for todo ID */}
+                <input
+                    value={todoId ?? ''}
+                    onChange={(e) => setTodoId(parseInt(e.target.value))}
+                    className='rounded-full text-black w-full py-3.5 px-5 border focus:outline-secondary'
+                    type="number"
+                    placeholder='ID to Update'
+                />
+                <button
+                    type='button'
+                    onClick={() => {
+                        handleSubmit();
+                        if (inputRef.current) {
+                            inputRef.current.value = ''; // Clear the input field after clicking the button
+                        }
+                    }}
+                    className='p-4 shrink-0 rounded-full bg-gradient-to-b from-primary to-secondary'>
+                    <span className='text-white font-bold text-4xl'>+</span>
+                </button>
+            </form>
+        </div >
     );
-}
+};
 
 export default UpdateTodo;
-

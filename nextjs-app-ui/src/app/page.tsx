@@ -25,6 +25,12 @@ export default function Home() {
         <DeleteTodo />
         {/* Bar */}
         <div className="h-1.5 bg-black mx-auto rounded-md w-1/2 mt-6"></div>
+
+        {/* Update Todo */}
+        <h2 className='font-bold text-3xl text-center text-gray-800'>Update Todo</h2>
+        <UpdateTodo />
+        {/* Bar */}
+        <div className="h-1.5 bg-black mx-auto rounded-md w-1/2 mt-6"></div>
       </div>
     </main>
   )
