@@ -17,7 +17,7 @@ class Todo(SQLModel, table=True):
 #     "postgresql", "postgresql+psycopg"
 # )
 
-connection_string = "postgresql://ansarisudais333:Poxn52hIkBTs@ep-ancient-silence-a5pe46yn.us-east-2.aws.neon.tech/sqlDBWithFastAPI?sslmode=require"
+connection_string = ""
 
 engine = create_engine(
     connection_string, connect_args={"sslmode": "require"}, pool_recycle=300
